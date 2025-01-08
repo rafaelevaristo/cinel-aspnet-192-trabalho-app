@@ -42,39 +42,13 @@ namespace wapp.Controllers
         // POST: Sales/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Identifier,Date,Time,ClientId,Observations,FinalValue,State,IsPaid")] Sale sale, List<int> selectedProductIds, List<int> quantities)
+        public async Task<IActionResult> Create([Bind("Id,Identifier,Date,Time,ClientId,Observations,FinalValue,State,IsPaid")] Sale sale)
         {
             if (ModelState.IsValid)
             {
-                sale.Date = DateTime.Now;
-                sale.Time = DateTime.Now;
-                sale.Identifier = $"V{DateTime.Now.Year}/A/{_context.Sales.Count() + 1:D3}";
-
-                // Calculate final value based on selected products and quantities
-                decimal finalValue = 0;
-                for (int i = 0; i < selectedProductIds.Count; i++)
-                {
-                    var product = await _context.Products.FindAsync(selectedProductIds[i]);
-                    finalValue += product.FinalPrice * quantities[i];
-                    sale.SaleProducts.Add(new SaleProduct
-                    {
-                        ProductId = selectedProductIds[i],
-                        Quantity = quantities[i]
-                    });
-                }
-
-                sale.FinalValue = finalValue;
-                sale.State = SaleState.Ordered;
-                sale.IsPaid = false;
-
                 _context.Add(sale);
                 await _context.SaveChangesAsync();
-
-                // Send Email to client
-                await SendSaleEmail(sale);
-
-                TempData["Success"] = "Sale created successfully!";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index));            
             }
             ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "FullName", sale.ClientId);
             ViewData["ProductId"] = new SelectList(_context.Products, "Id", "Description");
