@@ -28,6 +28,7 @@ public class Sale
     [ValidateNever]
     public Client Client { get; set; }
 
+    [ValidateNever] // Prevent validation of navigation property
     public List<SaleProduct> SaleProducts { get; set; }
 
     [StringLength(500, ErrorMessage = "Observations cannot exceed 500 characters.")]
