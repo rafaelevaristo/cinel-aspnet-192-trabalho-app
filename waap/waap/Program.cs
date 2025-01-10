@@ -1,6 +1,14 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
+using NToastNotify;
+using waap;
 using waap.Data;
+using waap.Data.SeedDataBase;
+using wapp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +21,48 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+// Localization configuration
+const string defaultCulture = "pt";
+
+CultureInfo enCI = new CultureInfo(defaultCulture);
+
+var supportedCultures = new[]
+{
+    enCI,
+    new CultureInfo("pt"),
+    new CultureInfo("es")
+};
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new RequestCulture(defaultCulture);
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+});
+
+builder.Services
+    .AddMvc()
+    .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+    // è necessario que exista a data notation no modelo senão não vai traduzir
+    .AddDataAnnotationsLocalization(options =>
+    {
+            options.DataAnnotationLocalizerProvider = (type, factory) => factory.Create(typeof(Resource)) ;
+    })
+    .AddNToastNotifyToastr(new ToastrOptions()
+    {
+        ProgressBar = true,
+        PositionClass = ToastPositions.TopRight
+    });
+
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+
+
+
+
 
 var app = builder.Build();
 
@@ -40,4 +90,18 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
+SeedDB(); // Executed every time the application restarts
+
 app.Run();
+
+void SeedDB()
+{
+    // using var scope = app.Services.CreateScope();
+    // var services = scope.ServiceProvider;
+
+    // var dbContext = services.GetRequiredService<ApplicationDbContext>();
+    // var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+    // var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+    // SeedDatabase.Seed(dbContext, userManager, roleManager);
+}

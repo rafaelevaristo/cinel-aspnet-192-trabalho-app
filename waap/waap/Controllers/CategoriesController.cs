@@ -1,23 +1,37 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using wapp.Models;
-using waap.Data;
-using Microsoft.EntityFrameworkCore;
-
+﻿
 namespace wapp.Controllers
 {
+    using wapp.Models;
+    using waap.Data;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using System.Linq;
     using System.Threading.Tasks;
+    using NToastNotify;
+    using Microsoft.AspNetCore.Mvc.Localization;
+    using waap;
+    using wapp.Services;
 
     public class CategoriesController : Controller
     {
-        private readonly ApplicationDbContext _context;
 
-        public CategoriesController(ApplicationDbContext context)
+        private readonly ILogger<CategoriesController> _logger;
+        private readonly IToastNotification _toastNotification;
+        private readonly ApplicationDbContext _context;        
+        private readonly IHtmlLocalizer<Resource> _sharedLocalizer;
+
+
+        public CategoriesController(ILogger<CategoriesController> logger,
+                                    IToastNotification toastNotification,
+                                    IHtmlLocalizer<Resource> localizer,                                    
+                                    ApplicationDbContext context)
         {
+            _logger = logger;
+            _toastNotification = toastNotification;
+            _sharedLocalizer = localizer;
             _context = context;
         }
+
 
         // GET: Categories
         public async Task<IActionResult> Index()
@@ -56,6 +70,7 @@ namespace wapp.Controllers
                 _context.Add(category);
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Category created successfully!";
+                _toastNotification.AddSuccessToastMessage($"Successfully created a new category # {category.Name}");
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
@@ -89,6 +104,7 @@ namespace wapp.Controllers
                     _context.Update(category);
                     await _context.SaveChangesAsync();
                     TempData["Success"] = "Category updated successfully!";
+                    _toastNotification.AddSuccessToastMessage($"# {category.Name} # Category updated successfully! ");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -127,6 +143,7 @@ namespace wapp.Controllers
                 _context.Categories.Remove(category);
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Category deleted successfully!";
+                _toastNotification.AddSuccessToastMessage($"# {category.Name} # Category deleted successfully! ");
             }
             return RedirectToAction(nameof(Index));
         }
