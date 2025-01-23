@@ -13,7 +13,8 @@ public class Product
     public string Description { get; set; }
 
     [Required]
-    [Range(0.01, double.MaxValue, ErrorMessage = "Final price must be greater than 0.")]
+    //[Range(0.01, double.MaxValue, ErrorMessage = "Final price must be greater than 0.")]
+    [DataType(DataType.Currency)]
     public decimal FinalPrice { get; set; }
 
     [Required]

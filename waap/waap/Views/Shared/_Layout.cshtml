@@ -25,6 +25,32 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="productDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Products
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="productDropdown">
+                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">List Products</a></li>
+                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Categories" asp-action="Index">List Categories</a></li>
+                                <li><a class="nav-link text-dark" asp-area="" asp-controller="Categories" asp-action="ProductsByCategory">Products By Category</a></li>                                
+                            </ul>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Clients" asp-action="Index">Clients</a>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="salesDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Sales
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="salesDropdown">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Sales" asp-action="Index">View Sales List</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="SaleProducts" asp-action="Index">View SalesProducts</a></li>
+                            </ul>
+                        </li>
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
@@ -45,6 +71,13 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+
+
+
     @await RenderSectionAsync("Scripts", required: false)
+
+    @await Component.InvokeAsync("NToastNotify")
+
 </body>
 </html>
