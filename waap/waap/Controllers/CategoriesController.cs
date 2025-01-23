@@ -11,6 +11,7 @@ namespace wapp.Controllers
     using Microsoft.AspNetCore.Mvc.Localization;
     using waap;
     using wapp.Services;
+    using Microsoft.VisualBasic;
 
     public class CategoriesController : Controller
     {
@@ -68,8 +69,9 @@ namespace wapp.Controllers
             {
                 _context.Add(category);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "Category created successfully!";
-                _toastNotification.AddSuccessToastMessage($"Successfully created a new category # {category.Name}");
+                //TempData["Success"] = "Category created successfully!";
+                var sucessMsg = _sharedLocalizer["msgCategoryCrtSucess"].Value;
+                _toastNotification.AddSuccessToastMessage($"{sucessMsg} # {category.Name}");
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
@@ -101,8 +103,11 @@ namespace wapp.Controllers
                 {
                     _context.Update(category);
                     await _context.SaveChangesAsync();
-                    TempData["Success"] = "Category updated successfully!";
-                    _toastNotification.AddSuccessToastMessage($"# {category.Name} # Category updated successfully! ");
+                    //TempData["Success"] = "Category updated successfully!";
+
+                    var sucessMsg = _sharedLocalizer["msgCategoryUpdSucess"].Value;
+
+                    _toastNotification.AddSuccessToastMessage($"# {category.Name} # {sucessMsg} ");
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -139,8 +144,9 @@ namespace wapp.Controllers
             {
                 _context.Categories.Remove(category);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "Category deleted successfully!";
-                _toastNotification.AddSuccessToastMessage($"# {category.Name} # Category deleted successfully! ");
+                //TempData["Success"] = "Category deleted successfully!";
+                var sucessMsg = _sharedLocalizer["msgCategoryDelSucess"].Value;
+                _toastNotification.AddSuccessToastMessage($"# {category.Name} # {sucessMsg} ");
             }
             return RedirectToAction(nameof(Index));
         }

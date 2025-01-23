@@ -129,4 +129,20 @@
     <value>Create New</value>
     <comment>Create new stuff</comment>
   </data>
+  <data name="lblLanguage" xml:space="preserve">
+    <value>Language</value>
+    <comment>Language</comment>
+  </data>
+  <data name="msgCategoryCrtSucess" xml:space="preserve">
+    <value>Successfully created a new category</value>
+    <comment>Successfully created a new category</comment>
+  </data>
+  <data name="msgCategoryDelSucess" xml:space="preserve">
+    <value>Category deleted successfully!</value>
+    <comment>Category deleted successfully!</comment>
+  </data>
+  <data name="msgCategoryUpdSucess" xml:space="preserve">
+    <value>Category updated successfully!</value>
+    <comment>Category updated successfully</comment>
+  </data>
 </root>

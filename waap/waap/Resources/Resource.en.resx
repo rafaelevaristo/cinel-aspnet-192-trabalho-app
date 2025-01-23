@@ -126,4 +126,16 @@
   <data name="lblCreateNew" xml:space="preserve">
     <value>Create new</value>
   </data>
+  <data name="lblLanguage" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="msgCategoryCrtSucess" xml:space="preserve">
+    <value>Successfully created a new category</value>
+  </data>
+  <data name="msgCategoryDelSucess" xml:space="preserve">
+    <value>Category deleted successfully!</value>
+  </data>
+  <data name="msgCategoryUpdSucess" xml:space="preserve">
+    <value>Category updated successfully!</value>
+  </data>
 </root>
