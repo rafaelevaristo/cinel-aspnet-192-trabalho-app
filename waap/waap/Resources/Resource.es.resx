@@ -126,4 +126,16 @@
   <data name="lblCreateNew" xml:space="preserve">
     <value>Crear nuebo</value>
   </data>
+  <data name="lblLanguage" xml:space="preserve">
+    <value>Lingua</value>
+  </data>
+  <data name="msgCategoryCrtSucess" xml:space="preserve">
+    <value>Categorie creada com sucesso! Olé!</value>
+  </data>
+  <data name="msgCategoryDelSucess" xml:space="preserve">
+    <value>Categoria apagada! Olé!</value>
+  </data>
+  <data name="msgCategoryUpdSucess" xml:space="preserve">
+    <value>Categoria actualizada! Olé!</value>
+  </data>
 </root>
