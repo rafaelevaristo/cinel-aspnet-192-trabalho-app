@@ -41,7 +41,7 @@ namespace wapp.Controllers
 
         // POST: Sales/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        
         public async Task<IActionResult> Create([Bind("Id,Identifier,Date,Time,ClientId,Observations,FinalValue,State,IsPaid")] Sale sale)
         {
             if (ModelState.IsValid)
@@ -85,7 +85,7 @@ namespace wapp.Controllers
 
         // POST: Sales/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        
         public async Task<IActionResult> Edit(int id, [Bind("Id,Identifier,Date,Time,ClientId,Observations,FinalValue,State,IsPaid")] Sale sale)
         {
             if (id != sale.Id) return NotFound();
@@ -127,7 +127,7 @@ namespace wapp.Controllers
 
         // POST: Sales/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var sale = await _context.Sales.FindAsync(id);

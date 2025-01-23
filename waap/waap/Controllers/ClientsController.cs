@@ -41,7 +41,7 @@ namespace wapp.Controllers
 
         // POST: Clients/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        
         public async Task<IActionResult> Create([Bind("FullName,Email,BirthDate,Address,City,PostalCode,NIF,ClientNumber")] Client client)
         {
             if (ModelState.IsValid)
@@ -67,7 +67,7 @@ namespace wapp.Controllers
 
         // POST: Clients/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        
         public async Task<IActionResult> Edit(int id, [Bind("Id,FullName,Email,BirthDate,Address,City,PostalCode,NIF,ClientNumber")] Client client)
         {
             if (id != client.Id) return NotFound();
@@ -106,7 +106,7 @@ namespace wapp.Controllers
 
         // POST: Clients/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var client = await _context.Clients.FindAsync(id);

@@ -17,13 +17,13 @@ namespace wapp.Controllers
 
         private readonly ILogger<CategoriesController> _logger;
         private readonly IToastNotification _toastNotification;
-        private readonly ApplicationDbContext _context;        
+        private readonly ApplicationDbContext _context;
         private readonly IHtmlLocalizer<Resource> _sharedLocalizer;
 
 
         public CategoriesController(ILogger<CategoriesController> logger,
                                     IToastNotification toastNotification,
-                                    IHtmlLocalizer<Resource> localizer,                                    
+                                    IHtmlLocalizer<Resource> localizer,
                                     ApplicationDbContext context)
         {
             _logger = logger;
@@ -62,7 +62,6 @@ namespace wapp.Controllers
 
         // POST: Categories/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,Description")] Category category)
         {
             if (ModelState.IsValid)
@@ -91,7 +90,6 @@ namespace wapp.Controllers
 
         // POST: Categories/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description")] Category category)
         {
             if (id != category.Id)
@@ -134,7 +132,6 @@ namespace wapp.Controllers
 
         // POST: Categories/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var category = await _context.Categories.FindAsync(id);
@@ -152,8 +149,21 @@ namespace wapp.Controllers
         {
             return _context.Categories.Any(e => e.Id == id);
         }
+
+
+        [HttpGet]
+        // GET: Categories/ProductsByCategory/5
+        public async Task<IActionResult> ProductsByCategory(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var productListQuery = _context.Categories
+                .Include(p => p.Products)   
+                .Where(m => m.Id == id);
+                      
+            return View(await productListQuery.ToListAsync());
+        }
+
     }
-
-
-
 }

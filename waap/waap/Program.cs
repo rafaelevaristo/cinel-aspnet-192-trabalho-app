@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using NToastNotify;
 using waap;
 using waap.Data;
@@ -20,26 +21,29 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews();
-
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
-// Localization configuration
-const string defaultCulture = "pt";
+//builder.Services.AddControllersWithViews();
+    
 
-CultureInfo enCI = new CultureInfo(defaultCulture);
+// Localization configuration
+const string defaultCulture = "en";
+
+CultureInfo defaultCultureCI = new CultureInfo(defaultCulture);
+defaultCultureCI.NumberFormat.CurrencyDecimalSeparator = ".";
+defaultCultureCI.NumberFormat.NumberDecimalSeparator = ".";
 
 var supportedCultures = new[]
 {
-    enCI,
+    defaultCultureCI,
     new CultureInfo("pt"),
     new CultureInfo("es")
 };
 
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
-    options.DefaultRequestCulture = new RequestCulture(defaultCulture);
+    options.DefaultRequestCulture = new RequestCulture(defaultCultureCI);
     options.SupportedCultures = supportedCultures;
     options.SupportedUICultures = supportedCultures;
 });
@@ -59,9 +63,6 @@ builder.Services
     });
 
 builder.Services.AddTransient<IEmailSender, EmailSender>();
-
-
-
 
 
 var app = builder.Build();
@@ -90,9 +91,15 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
+
+app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);  
+
 SeedDB(); // Executed every time the application restarts
 
 app.Run();
+
+
+
 
 void SeedDB()
 {
