@@ -7,42 +7,85 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using waap.Data;
 using wapp.Models;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace waap.Controllers
 {
     public class EncomendarController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IEmailSender _emailSender;
 
-        public EncomendarController(ApplicationDbContext context)
+
+        public EncomendarController(ApplicationDbContext context, IEmailSender emailSender)
         {
             _context = context;
+            _emailSender = emailSender;
         }
 
         // GET: SalesManagement
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Sales.Include(s => s.Client);
+            var applicationDbContext = _context.Clients;
             return View(await applicationDbContext.ToListAsync());
         }
 
+
+        
+
         // GET: SalesManagement/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> selectproductsforsale(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var sale = await _context.Sales
-                .Include(s => s.Client)
+            var client = await _context.Clients                
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (sale == null)
+            if (client == null)
             {
                 return NotFound();
             }
 
-            return View(sale);
+            var products = _context.Products
+                .Include(p => p.Category)
+                .Where(p => ! p.IsInactive);
+
+            ViewBag.CustomerId = id;
+
+            return View(await products.ToListAsync());
+
+            
+        }
+
+        
+        public async Task<IActionResult> ConcludeSale(int? id, int[]? productIds)
+        {
+            // Check if the sale ID is provided
+            //if (id == null)
+            //{
+            //    return NotFound();
+            //}
+
+            // Check if any product IDs are provided
+            if (productIds == null || productIds.Length == 0)
+            {
+                return BadRequest("No products selected for the sale.");
+            }
+
+            // Retrieve the selected products from the database
+            var selectedProducts = await _context.Products
+                .Where(p => productIds.Contains(p.Id))
+                .ToListAsync();
+
+
+            if (selectedProducts == null)
+            {
+                return NotFound();
+            }
+
+            return View(selectedProducts);
         }
 
         // GET: SalesManagement/Create
