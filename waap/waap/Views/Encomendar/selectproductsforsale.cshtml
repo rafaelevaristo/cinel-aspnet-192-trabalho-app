@@ -13,60 +13,78 @@
 
 <form asp-action="ConcludeSale" method="get">
     <input type="hidden" name="id" value="@ViewBag.CustomerId" />
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FinalPrice)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StockQuantity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Weight)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Category)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsInactive)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FinalPrice)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StockQuantity)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Weight)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Category.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsInactive)
-            </td>
-            <td>
-                @* <a asp-action="concludesale" asp-route-id="@item.Id">Select</a> | *@
-                        <a asp-action="concludesale" asp-route-productIds="@item.Id">Select</a> |
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FinalPrice)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.StockQuantity)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Weight)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Category)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.IsInactive)
+                </th>
+                <th>
+                    Quantity
+                </th>
 
-                        <input type="checkbox" name="productIds" value="@item.Id" id="product_@item.Id" />
-                
-            </td>
-        </tr>
-}
+                <th>
+                    Select
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model) {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FinalPrice)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.StockQuantity)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Weight)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Category.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsInactive)
+                    </td>
+
+                    <td>
+
+
+                        <input type="number" name="quantity_for_product_@(item.Id)_stuff" id="product_@item.Id" />
+
+                    </td>
+                    <td>
+                        @* <a asp-action="concludesale" asp-route-id="@item.Id">Select</a> | *@
+                        @*  <a asp-action="concludesale" asp-route-productIds="@item.Id">Select</a> | *@
+
+                        <input type="checkbox" name="productIds" value="@item.Id" id="product_@item.Id" /> 
+
+                    </td>
+
+                   
+                </tr>
+            }
+
+
     </tbody>
 </table>
     <button type="submit">Conclude Sale</button>

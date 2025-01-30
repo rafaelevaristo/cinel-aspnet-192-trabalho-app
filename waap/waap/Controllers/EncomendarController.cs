@@ -80,10 +80,47 @@ namespace waap.Controllers
                 .ToListAsync();
 
 
+            var newSaleProducts = new List<SaleProduct>(); 
+
+
+            foreach (var selectedProduct in selectedProducts)
+            {
+
+                
+
+                int quantityStr = int.Parse(HttpContext.Request.Query[$"quantity_for_product_{selectedProduct.Id}_stuff"]);
+
+                var newSaleProduct = new SaleProduct
+                {
+                    Quantity = quantityStr,
+                    Product = selectedProduct
+                };
+
+                newSaleProducts.Add(newSaleProduct);
+
+
+            }
+
+            var newSale = new Sale();
+
+            newSale.ClientId = (int)id;
+
+            newSale.SaleProducts = newSaleProducts;
+
+            newSale.FinalValue = 1;
+            newSale.Observations = "testes e tal";
+
+
             if (selectedProducts == null)
             {
                 return NotFound();
             }
+
+            newSale.Identifier = Guid.NewGuid().ToString();
+
+
+            _context.Sales.Add(newSale);
+            await _context.SaveChangesAsync();
 
             return View(selectedProducts);
         }
