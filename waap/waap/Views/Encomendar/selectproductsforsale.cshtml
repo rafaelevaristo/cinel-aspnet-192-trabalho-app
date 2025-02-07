@@ -4,14 +4,10 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<h1>Select Products For Sale</h1>
 
 
-<form asp-action="ConcludeSale" method="get">
+<form asp-action="SaleDetails" method="get">
     <input type="hidden" name="id" value="@ViewBag.CustomerId" />
     <table class="table">
         <thead>
@@ -77,15 +73,13 @@
                         @*  <a asp-action="concludesale" asp-route-productIds="@item.Id">Select</a> | *@
 
                         <input type="checkbox" name="productIds" value="@item.Id" id="product_@item.Id" /> 
-
-                    </td>
-
-                   
+                    </td>                   
                 </tr>
             }
-
-
     </tbody>
 </table>
-    <button type="submit">Conclude Sale</button>
+
+    <button type="submit" class="btn btn-primary">Conclude Sale</button> <a asp-action="Index" asp-controller="Home" class="btn btn-secondary">Cancel</a>
+
+
 </form>

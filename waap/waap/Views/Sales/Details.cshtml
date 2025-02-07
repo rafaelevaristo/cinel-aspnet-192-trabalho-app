@@ -2,7 +2,6 @@
 
 @{
     ViewData["Title"] = "Details";
-    Layout = "SaleManagement";
 }
 
 <h1>Details</h1>
@@ -61,6 +60,63 @@
         </dd>
     </dl>
 </div>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SaleProducts.FirstOrDefault().Product)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SaleProducts.FirstOrDefault().Product.FinalPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SaleProducts.FirstOrDefault().Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SaleProducts.FirstOrDefault().OrderPrice)
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.SaleProducts)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Product.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Product.FinalPrice)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OrderPrice)
+                </td>
+
+
+            </tr>
+        }
+        <tr>
+            <td colspan="3"></td>
+
+
+            @{
+
+                var total = Model.SaleProducts?.Sum(sp => sp.OrderPrice) ?? 0m;
+            }
+
+            <td>  Preco total: @total.ToString("C")</td>
+
+        </tr>
+    </tbody>
+</table>
+
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
