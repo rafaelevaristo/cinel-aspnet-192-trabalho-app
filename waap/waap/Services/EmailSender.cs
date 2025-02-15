@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.Net;
 using System.Net.Mail;
 
@@ -10,7 +11,7 @@ namespace wapp.Services
         {
             SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
             {
-                Credentials = new NetworkCredential("rocinanterompante@gmail.com", "keya kegd ohfy fakn"),
+                Credentials = new NetworkCredential("olddonkeylearninglanguages@gmail.com", "gypl krrz pycm wrih"),
                 Port = 587,
                 EnableSsl = true,
             };
@@ -18,7 +19,7 @@ namespace wapp.Services
 
             MailMessage mailMessage = new MailMessage()
             {
-                From = new MailAddress("rocinanterompante@gmail.com", "Seguro Saúde Municipal"),
+                From = new MailAddress("olddonkeylearninglanguages@gmail.com", "Aviso de sistema do trabalho de MVC"),
                 Subject = subject,
                 Body = htmlMessage,
                 IsBodyHtml = true,
@@ -26,7 +27,7 @@ namespace wapp.Services
 
             mailMessage.To.Add(email);
 
-            mailMessage.Bcc.Add("rocinanterompante@gmail.com");
+            mailMessage.Bcc.Add("olddonkeylearninglanguages@gmail.com");
 
             smtpClient.Send(mailMessage);
 

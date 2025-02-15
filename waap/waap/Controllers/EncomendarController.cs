@@ -7,158 +7,182 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using waap.Data;
 using wapp.Models;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace waap.Controllers
 {
     public class EncomendarController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IEmailSender _emailSender;
 
-        public EncomendarController(ApplicationDbContext context)
+
+        public EncomendarController(ApplicationDbContext context, IEmailSender emailSender)
         {
             _context = context;
+            _emailSender = emailSender;
         }
 
         // GET: SalesManagement
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Sales.Include(s => s.Client);
+            var applicationDbContext = _context.Clients;
             return View(await applicationDbContext.ToListAsync());
         }
 
+
         // GET: SalesManagement/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> SelectProductsForSale(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var sale = await _context.Sales
-                .Include(s => s.Client)
+            var client = await _context.Clients                
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (sale == null)
+            if (client == null)
             {
                 return NotFound();
             }
 
-            return View(sale);
+            var products = _context.Products
+                .Include(p => p.Category)
+                .Where(p => ! p.IsInactive);
+
+            ViewBag.CustomerId = id;
+
+            return View(await products.ToListAsync());
+
+            
         }
 
-        // GET: SalesManagement/Create
-        public IActionResult Create()
-        {
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "Address");
-            return View();
-        }
 
-        // POST: SalesManagement/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        
-        public async Task<IActionResult> Create([Bind("Id,Identifier,Date,Time,ClientId,Observations,FinalValue,State,IsPaid")] Sale sale)
+            public async Task<IActionResult> SaleDetails(int? id, int[]? productIds)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(sale);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "Address", sale.ClientId);
-            return View(sale);
-        }
+            // Check if the sale ID is provided
+            //if (id == null)
+            //{
+            //    return NotFound();
+            //}
 
-        // GET: SalesManagement/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
+            // Check if any product IDs are provided
+            if (productIds == null || productIds.Length == 0)
             {
-                return NotFound();
+                return BadRequest("No products selected for the sale.");
             }
 
-            var sale = await _context.Sales.FindAsync(id);
-            if (sale == null)
-            {
-                return NotFound();
-            }
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "Address", sale.ClientId);
-            return View(sale);
-        }
+            // Retrieve the selected products from the database
+            var selectedProducts = await _context.Products
+                .Where(p => productIds.Contains(p.Id))
+                .ToListAsync();
 
-        // POST: SalesManagement/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Identifier,Date,Time,ClientId,Observations,FinalValue,State,IsPaid")] Sale sale)
-        {
-            if (id != sale.Id)
-            {
-                return NotFound();
-            }
 
-            if (ModelState.IsValid)
+            var newSaleProducts = new List<SaleProduct>();
+
+
+            foreach (var selectedProduct in selectedProducts)
             {
+                // TODO Protect from empty stuff 
+
+
                 try
                 {
-                    _context.Update(sale);
-                    await _context.SaveChangesAsync();
+                    int quantityStr = int.Parse(HttpContext.Request.Query[$"quantity_for_product_{selectedProduct.Id}_stuff"]);
+
+                    var newSaleProduct = new SaleProduct
+                    {
+                        Quantity = quantityStr,
+                        Product = selectedProduct,
+                        OrderPrice = quantityStr * selectedProduct.FinalPrice
+                    };
+
+                    newSaleProducts.Add(newSaleProduct);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception)
                 {
-                    if (!SaleExists(sale.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    // TODO return to the main view and pop a error message via toastr .
+                    return BadRequest($"Bad quantity select for sale for product {selectedProduct.Description}");
                 }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "Address", sale.ClientId);
-            return View(sale);
-        }
 
-        // GET: SalesManagement/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
+
+
+            }
+
+            var newSale = new Sale();
+
+            newSale.ClientId = (int)id;
+
+            newSale.SaleProducts = newSaleProducts;
+
+            newSale.FinalValue = 1;
+            newSale.Observations = "testes e tal";
+
+
+            if (selectedProducts == null)
             {
                 return NotFound();
             }
 
-            var sale = await _context.Sales
-                .Include(s => s.Client)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (sale == null)
-            {
-                return NotFound();
-            }
+            newSale.Identifier = Guid.NewGuid().ToString();
 
-            return View(sale);
+            return View(newSale);
         }
 
-        // POST: SalesManagement/Delete/5
-        [HttpPost, ActionName("Delete")]
-        
-        public async Task<IActionResult> DeleteConfirmed(int id)
+
+
+        public async Task<IActionResult> ConcludeSale(Sale sale)
         {
-            var sale = await _context.Sales.FindAsync(id);
-            if (sale != null)
+            var newSaleProducts = new List<SaleProduct>();
+
+            foreach (var saleproduct in sale.SaleProducts)
             {
-                _context.Sales.Remove(sale);
+                // TODO Protect from empty stuff 
+
+                try
+                {
+                    
+                    var newSaleProduct = new SaleProduct
+                    {
+                        Quantity = saleproduct.Quantity,
+                        ProductId = saleproduct.Product.Id,
+                        OrderPrice = saleproduct.OrderPrice
+
+                        // TODO : Não gosto de fazer isto isto deveria ser revalidado mas sinceramente depois vê-se
+                        //OrderPrice = saleproduct.Quantity * saleproduct.Product.FinalPrice
+                    };
+
+                    newSaleProducts.Add(newSaleProduct);
+                }
+                catch (Exception)
+                {
+                    // TODO return to the main view and pop a error message via toastr .
+                    return BadRequest($"Bad quantity select for sale for product {saleproduct.Product.Description}");
+                }
+                
+
+
             }
 
+            var newSale = new Sale();
+
+            newSale.ClientId = sale.ClientId;
+
+            newSale.SaleProducts = newSaleProducts;
+
+            var totalSale = newSale.SaleProducts?.Sum(sp => sp.OrderPrice) ?? 0m;
+
+            newSale.FinalValue = totalSale;
+            newSale.Observations = sale.Observations;
+            newSale.Identifier = sale.Identifier;
+            //Guid.NewGuid().ToString();
+
+            _context.Sales.Add(newSale);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            // Redirect or do something with newSaleId
+            return RedirectToAction("Details", "Sales", new { id = newSale.Id });            
         }
 
-        private bool SaleExists(int id)
-        {
-            return _context.Sales.Any(e => e.Id == id);
-        }
+               
     }
 }

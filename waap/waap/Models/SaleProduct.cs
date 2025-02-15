@@ -25,4 +25,10 @@ public class SaleProduct
     [ForeignKey("ProductId")]
     [ValidateNever]
     public Product Product { get; set; }
+
+    [Required]
+    //[Range(0.01, double.MaxValue, ErrorMessage = "Final price must be greater than 0.")]
+    [DataType(DataType.Currency)]
+    public decimal OrderPrice { get; set; }
+
 }

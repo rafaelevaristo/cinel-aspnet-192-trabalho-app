@@ -25,9 +25,19 @@ namespace wapp.Controllers
         }
 
         // GET: Sales
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(SaleState saleState, Boolean onlyNonPayed)
         {
             var sales = _context.Sales.Include(s => s.Client).Include(s => s.SaleProducts).ThenInclude(sp => sp.Product);
+
+            if (saleState != SaleState.None)
+            {
+                sales.Where(s => s.State == saleState);
+            }
+
+            if (onlyNonPayed) {
+                sales.Where(s => s.IsPaid == false); 
+            }
+
             return View(await sales.ToListAsync());
         }
 
@@ -76,7 +86,11 @@ namespace wapp.Controllers
         {
             if (id == null) return NotFound();
 
-            var sale = await _context.Sales.FindAsync(id);
+            var sale = await _context.Sales
+                .Include(s => s.Client)
+                .Include(s => s.SaleProducts)
+                .ThenInclude(sp => sp.Product)
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (sale == null) return NotFound();
 
             ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "FullName", sale.ClientId);

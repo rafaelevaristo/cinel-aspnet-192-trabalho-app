@@ -47,8 +47,22 @@
                                 Sales
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="salesDropdown">
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Sales" asp-action="Index">View Sales List</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Encomendar" asp-action="Index">New Sale</a></li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Sales" asp-action="Index" asp-route-saleState="@wapp.Models.SaleState.Ordered" asp-route-onlyNonPayed="@false">List @(wapp.Models.SaleState.Ordered) Sales </a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Sales" asp-action="Index" asp-route-saleState="@wapp.Models.SaleState.Processing" asp-route-onlyNonPayed="@false">List @(wapp.Models.SaleState.Processing) Sales </a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Sales" asp-action="Index" asp-route-saleState="@wapp.Models.SaleState.Processed" asp-route-onlyNonPayed="@false">List @(wapp.Models.SaleState.Processed) Sales </a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Sales" asp-action="Index" asp-route-saleState="@wapp.Models.SaleState.Sent" asp-route-onlyNonPayed="@false">List @(wapp.Models.SaleState.Sent) Sales</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Sales" asp-action="Index" asp-route-saleState="@wapp.Models.SaleState.None" asp-route-onlyNonPayed="@false">List All Sales</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Sales" asp-action="Index" asp-route-saleState="@wapp.Models.SaleState.None" asp-route-onlyNonPayed="@true">List Non Payed</a></li>
+
+                               
+                                
+                                
+                                
+                                
                                 <li><a class="dropdown-item" asp-area="" asp-controller="SaleProducts" asp-action="Index">View SalesProducts</a></li>
+                                
                             </ul>
                         </li>
                     </ul>
