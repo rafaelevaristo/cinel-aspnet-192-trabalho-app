@@ -8,9 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using waap.Data;
 using wapp.Models;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace waap.Controllers
 {
+
+    [Authorize]
     public class EncomendarController : Controller
     {
         private readonly ApplicationDbContext _context;

@@ -14,7 +14,9 @@ namespace wapp.Controllers
     using Microsoft.AspNetCore.Mvc.Rendering;
     using System.Net.Mail;
     using System.Net;
+    using Microsoft.AspNetCore.Authorization;
 
+    [Authorize]
     public class ProcessarController : Controller
     {
         private readonly ApplicationDbContext _context;

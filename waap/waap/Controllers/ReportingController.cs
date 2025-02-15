@@ -12,7 +12,9 @@
     using wapp.Models;
     using waap.Data;
     using waap.ViewModels.Reporting;
+    using Microsoft.AspNetCore.Authorization;
 
+    [Authorize]
     public class ReportingController : Controller
     {
 

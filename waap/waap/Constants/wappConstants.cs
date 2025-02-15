@@ -6,22 +6,22 @@ namespace wapp
         {
             public readonly struct ADMIN
             {
-                public static readonly string USERNAME = "admin@sms.pt";
-                public static readonly string EMAIL = "admin@sms.pt";
+                public static readonly string USERNAME = "admin@elastico.pt";
+                public static readonly string EMAIL = "admin@elastico.pt";
                 public static readonly string PASSWORD = "xpto1234";
             }
 
             public readonly struct SALESMAN
             {
-                public static readonly string USERNAME = "SALESMAN@sms.pt";
-                public static readonly string EMAIL = "SALESMAN@sms.pt";
+                public static readonly string USERNAME = "SALESMAN@elastico.pt";
+                public static readonly string EMAIL = "SALESMAN@elastico.pt";
                 public static readonly string PASSWORD = "01012024";
             }
 
             public readonly struct LOGISTICS
             {
-                public static readonly string USERNAME = "administrative@sms.pt";
-                public static readonly string EMAIL = "administrative@sms.pt";
+                public static readonly string USERNAME = "administrative@elastico.pt";
+                public static readonly string EMAIL = "administrative@elastico.pt";
                 public static readonly string PASSWORD = "qwerty1234";
             }
         }

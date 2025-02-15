@@ -10,7 +10,9 @@
     using System.Net;
     using wapp.Models;
     using waap.Data;
+    using Microsoft.AspNetCore.Authorization;
 
+    [Authorize]
     public class SalesController : Controller
     {
         private readonly ApplicationDbContext _context;

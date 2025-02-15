@@ -12,7 +12,9 @@ namespace wapp.Controllers
     using waap;
     using wapp.Services;
     using Microsoft.VisualBasic;
+    using Microsoft.AspNetCore.Authorization;
 
+    [Authorize]
     public class CategoriesController : Controller
     {
 
