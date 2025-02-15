@@ -64,6 +64,30 @@ namespace wapp
                  };
             }
 
+
+            public readonly struct APP_POLICY_PRODUCTSAREA
+            {
+                public const string NAME = "APP_POLICY_PRODUCTSAREA";
+                public static readonly string[] POLICY_ROLES = {
+                   ROLES.SALESMAN,
+                   ROLES.ADMIN
+                 };
+            }
+
+
+            public readonly struct APP_POLICY_SALESAREAS
+            {
+                public const string NAME = "APP_POLICY_SALESAREAS";
+                public static readonly string[] POLICY_ROLES = {
+                   ROLES.SALESMAN,
+                   ROLES.ADMIN,
+                   ROLES.LOGISTICS
+                 };
+            }
+            
+
+
+
         }           
     }
 }

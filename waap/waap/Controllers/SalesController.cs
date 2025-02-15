@@ -11,8 +11,10 @@
     using wapp.Models;
     using waap.Data;
     using Microsoft.AspNetCore.Authorization;
+    using static wapp.waapConstants.POLICIES;
 
     [Authorize]
+    [Authorize(Policy = APP_POLICY_SALESAREAS.NAME)]
     public class SalesController : Controller
     {
         private readonly ApplicationDbContext _context;
