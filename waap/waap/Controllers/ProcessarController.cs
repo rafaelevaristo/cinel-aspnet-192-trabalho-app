@@ -103,11 +103,8 @@ namespace wapp.Controllers
             {
                 if (saleProduct.Quantity !=0 && saleProduct.Quantity <= saleProduct.Product.StockQuantity)
                 {
-
-                    saleProduct.Product.StockQuantity = saleProduct.Product.StockQuantity - saleProduct.Quantity;
-                                      
+                    saleProduct.Product.StockQuantity = saleProduct.Product.StockQuantity - saleProduct.Quantity;                                      
                 }
-
             }
 
             sale.State = SaleState.Processed;

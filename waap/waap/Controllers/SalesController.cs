@@ -1,10 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using wapp.Models;
-using waap.Data;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc.Rendering;
-
-namespace wapp.Controllers
+﻿namespace wapp.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
@@ -14,6 +8,8 @@ namespace wapp.Controllers
     using Microsoft.AspNetCore.Mvc.Rendering;
     using System.Net.Mail;
     using System.Net;
+    using wapp.Models;
+    using waap.Data;
 
     public class SalesController : Controller
     {
