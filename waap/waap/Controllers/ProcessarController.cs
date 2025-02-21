@@ -18,6 +18,9 @@ namespace wapp.Controllers
     using wapp.Services;
     using waap.Services;
     using Microsoft.AspNetCore.Identity.UI.Services;
+    using Microsoft.AspNetCore.Mvc.Localization;
+    using NToastNotify;
+    using waap;
 
     [Authorize]
     public class ProcessarController : Controller
@@ -25,13 +28,24 @@ namespace wapp.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IEmailSender _emailservice;
         private readonly ViewRenderService _viewRenderService;
+        private readonly ILogger<CategoriesController> _logger;
+        private readonly IToastNotification _toastNotification;
+        private readonly IHtmlLocalizer<Resource> _sharedLocalizer;
 
 
-        public ProcessarController(ApplicationDbContext context, IEmailSender emailservice, ViewRenderService viewRenderService)
+        public ProcessarController(ApplicationDbContext context,
+                                    IEmailSender emailservice,
+                                    ViewRenderService viewRenderService,
+                                    ILogger<CategoriesController> logger,
+                                    IToastNotification toastNotification,
+                                   IHtmlLocalizer<Resource> localizer)
         {
             _context = context;
             _emailservice = emailservice;
             _viewRenderService = viewRenderService;
+            _logger = logger;
+            _toastNotification = toastNotification;
+            _sharedLocalizer = localizer;
         }
 
         // GET: Sales
@@ -93,12 +107,8 @@ namespace wapp.Controllers
             return RedirectToAction("StartProcessing", new { id = id });
         }
 
-
-
         public async Task<IActionResult> Picking(int? id)
         {
-
-
             if (id == null) return NotFound();
 
             var sale = await _context.Sales
@@ -120,6 +130,24 @@ namespace wapp.Controllers
             sale.State = SaleState.Processed;
 
             await _context.SaveChangesAsync();
+
+
+            if (sale != null)
+            {
+                try
+                {
+                    string htmlEmail = await _viewRenderService.RenderViewToStringAsync(ControllerContext, "_EmailTemplate", sale);
+                    await _emailservice.SendEmailAsync(sale.Client.Email, $"Encomenda {sale.Identifier}", htmlEmail);
+                }
+                catch (Exception)
+                {
+                    var msgFalledToSendEmail = _sharedLocalizer["msgFalledToSendEmail"].Value;
+
+                    _toastNotification.AddErrorToastMessage($" # {msgFalledToSendEmail} : {sale.Identifier}");
+
+                }
+            }
+
 
             return RedirectToAction("StartProcessing", new { id = id });
         }

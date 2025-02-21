@@ -86,7 +86,7 @@
 
                             if (sale.State == SaleState.Processing)
                             {
-                                <a asp-controller="Processar" asp-action="StartProcessing" class="btn btn-success" asp-route-id="@sale.Id">Execute picking</a>
+                                <a asp-controller="Processar" asp-action="StartProcessing" class="btn btn-warning" asp-route-id="@sale.Id">Execute picking</a>
                             }
                             
                         }                        
