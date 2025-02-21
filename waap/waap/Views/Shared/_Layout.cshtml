@@ -1,4 +1,14 @@
-﻿<!DOCTYPE html>
+﻿@using wapp.Models
+@using static wapp.waapConstants
+
+@{
+    bool isAdmin = User.IsInRole(ROLES.ADMIN);
+    bool isSales = User.IsInRole(ROLES.SALESMAN);
+    bool isLogistics = User.IsInRole(ROLES.LOGISTICS);
+}
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -49,19 +59,29 @@
                             <ul class="dropdown-menu" aria-labelledby="salesDropdown">
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Encomendar" asp-action="Index">New Sale</a></li>
                                 <li><hr class="dropdown-divider" /></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Sales" asp-action="Index" asp-route-saleState="@wapp.Models.SaleState.Ordered" asp-route-onlyNonPayed="@false">List @(wapp.Models.SaleState.Ordered) Sales </a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Sales" asp-action="Index" asp-route-saleState="@wapp.Models.SaleState.Processing" asp-route-onlyNonPayed="@false">List @(wapp.Models.SaleState.Processing) Sales </a></li>
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Sales" asp-action="Index" asp-route-saleState="@wapp.Models.SaleState.Processed" asp-route-onlyNonPayed="@false">List @(wapp.Models.SaleState.Processed) Sales </a></li>
+
+                                @{
+                                    if (isSales || isAdmin || isLogistics)
+                                    {
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Sales" asp-action="Index" asp-route-saleState="@wapp.Models.SaleState.Ordered" asp-route-onlyNonPayed="@false">List @(wapp.Models.SaleState.Ordered) Sales </a></li>
+                                    }
+                                }
+
+                                @{
+                                    if (isAdmin || isLogistics)
+                                    {
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Sales" asp-action="Index" asp-route-saleState="@wapp.Models.SaleState.Processing" asp-route-onlyNonPayed="@false">List @(wapp.Models.SaleState.Processing) Sales </a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Sales" asp-action="Index" asp-route-saleState="@wapp.Models.SaleState.Processed" asp-route-onlyNonPayed="@false">List @(wapp.Models.SaleState.Processed) Sales </a></li>
+                                    }
+                                }
+                                
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Sales" asp-action="Index" asp-route-saleState="@wapp.Models.SaleState.Sent" asp-route-onlyNonPayed="@false">List @(wapp.Models.SaleState.Sent) Sales</a></li>
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Sales" asp-action="Index" asp-route-saleState="@wapp.Models.SaleState.None" asp-route-onlyNonPayed="@false">List All Sales</a></li>
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Sales" asp-action="Index" asp-route-saleState="@wapp.Models.SaleState.None" asp-route-onlyNonPayed="@true">List Non Payed</a></li>
                                 <li><a class="dropdown-item" asp-area="" asp-controller="SaleProducts" asp-action="Index">View SalesProducts</a></li>                                
                             </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Reporting" asp-action="Index">Saldos</a>
-                        </li>
-
+                        
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-dark" href="#" id="reportingDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Reporting

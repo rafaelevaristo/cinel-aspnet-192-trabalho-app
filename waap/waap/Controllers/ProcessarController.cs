@@ -15,15 +15,23 @@ namespace wapp.Controllers
     using System.Net.Mail;
     using System.Net;
     using Microsoft.AspNetCore.Authorization;
+    using wapp.Services;
+    using waap.Services;
+    using Microsoft.AspNetCore.Identity.UI.Services;
 
     [Authorize]
     public class ProcessarController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IEmailSender _emailservice;
+        private readonly ViewRenderService _viewRenderService;
 
-        public ProcessarController(ApplicationDbContext context)
+
+        public ProcessarController(ApplicationDbContext context, IEmailSender emailservice, ViewRenderService viewRenderService)
         {
             _context = context;
+            _emailservice = emailservice;
+            _viewRenderService = viewRenderService;
         }
 
         // GET: Sales

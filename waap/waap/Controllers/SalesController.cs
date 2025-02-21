@@ -12,6 +12,8 @@
     using waap.Data;
     using Microsoft.AspNetCore.Authorization;
     using static wapp.waapConstants.POLICIES;
+    using static wapp.waapConstants.USERS;
+    using static wapp.waapConstants;
 
     [Authorize]
     [Authorize(Policy = APP_POLICY_SALESAREAS.NAME)]
@@ -27,15 +29,46 @@
         // GET: Sales
         public async Task<IActionResult> Index(SaleState saleState, Boolean onlyNonPayed)
         {
-            var sales = _context.Sales.Include(s => s.Client).Include(s => s.SaleProducts).ThenInclude(sp => sp.Product);
+
+
+            bool isAdmin = User.IsInRole(ROLES.ADMIN);
+            bool isSales = User.IsInRole(ROLES.SALESMAN);
+            bool isLogistics = User.IsInRole(ROLES.LOGISTICS);
+
+
+            if (isSales && saleState != SaleState.None && saleState != SaleState.Ordered)
+            {
+                return View(new List<Sale>());
+            }
+
+
+            if (isLogistics && saleState != SaleState.None && (saleState != SaleState.Processing && saleState != SaleState.Processed && saleState != SaleState.Ordered))
+            {
+                return View(new List<Sale>());
+            }
+
+
+            IQueryable<Sale> sales = _context.Sales.Include(s => s.Client).Include(s => s.SaleProducts).ThenInclude(sp => sp.Product);
+
 
             if (saleState != SaleState.None)
             {
-                sales.Where(s => s.State == saleState);
+                sales = sales.Where(s => s.State == saleState);
             }
 
+            if (isSales && saleState == SaleState.None)
+            {
+                sales = sales.Where(s => s.State == SaleState.Ordered);
+            }
+
+            if (isLogistics && saleState == SaleState.None )
+            {
+                sales = sales.Where(s => s.State == SaleState.Processing || s.State == SaleState.Processed || s.State == SaleState.Ordered);                
+            }
+
+
             if (onlyNonPayed) {
-                sales.Where(s => s.IsPaid == false); 
+                sales = sales.Where(s => s.IsPaid == false); 
             }
 
             return View(await sales.ToListAsync());

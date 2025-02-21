@@ -9,7 +9,10 @@ using NToastNotify;
 using waap;
 using waap.Data;
 using waap.Data.SeedDataBase;
+using waap.ServiceModels;
+using waap.Services;
 using wapp.Services;
+using static wapp.waapConstants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +37,20 @@ builder.Services.AddDefaultIdentity<IdentityUser>(
     )
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(POLICIES.APP_POLICY.NAME, policy => policy.RequireRole(POLICIES.APP_POLICY.POLICY_ROLES));
+    options.AddPolicy(POLICIES.APP_POLICY_ADMIN.NAME, policy => policy.RequireRole(POLICIES.APP_POLICY_ADMIN.POLICY_ROLES));
+    options.AddPolicy(POLICIES.APP_POLICY_EDITABLE_CRUD.NAME, policy => policy.RequireRole(POLICIES.APP_POLICY_EDITABLE_CRUD.POLICY_ROLES));
+
+    options.AddPolicy(POLICIES.APP_POLICY_PRODUCTSAREA.NAME, policy => policy.RequireRole(POLICIES.APP_POLICY_PRODUCTSAREA.POLICY_ROLES));
+    options.AddPolicy(POLICIES.APP_POLICY_SALESAREAS.NAME, policy => policy.RequireRole(POLICIES.APP_POLICY_SALESAREAS.POLICY_ROLES));
+    
+});
+
+
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
@@ -61,6 +78,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.SupportedUICultures = supportedCultures;
 });
 
+
 builder.Services
     .AddMvc()
     .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
@@ -76,7 +94,9 @@ builder.Services
     });
 
 builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
+builder.Services.AddSingleton<ViewRenderService>();
 
 var app = builder.Build();
 
