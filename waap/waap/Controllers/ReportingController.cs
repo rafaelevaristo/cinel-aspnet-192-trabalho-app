@@ -27,12 +27,19 @@
         }
 
         // GET: ReportingController
-        public async Task<IActionResult> Saldo()
+        public async Task<IActionResult> Saldo(int IdCliente)
         {
+
 
             var saldoModel = new SaldoViewModel();
 
-            var salesQuery = _context.Sales.Include(s => s.Client).Include(s => s.SaleProducts).ThenInclude(sp => sp.Product);
+            IQueryable<Sale> salesQuery = _context.Sales.Include(s => s.Client).Include(s => s.SaleProducts).ThenInclude(sp => sp.Product);
+
+
+            if (IdCliente>0)
+            {
+                salesQuery = salesQuery.Where(s => s.ClientId == IdCliente);
+            }
             
             var sales = await salesQuery.ToListAsync();
 

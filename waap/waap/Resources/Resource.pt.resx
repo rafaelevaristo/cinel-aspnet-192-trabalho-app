@@ -138,4 +138,7 @@
   <data name="msgCategoryUpdSucess" xml:space="preserve">
     <value>Categoria actualizada com sucesso !</value>
   </data>
+  <data name="NoRecordsToDisplay" xml:space="preserve">
+    <value>Não há registos para mostrar !</value>
+  </data>
 </root>

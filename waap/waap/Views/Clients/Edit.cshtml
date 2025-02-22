@@ -54,14 +54,14 @@
                 <span asp-validation-for="ClientNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+                <div class="d-inline-flex gap-2">
+                    <input type="submit" value="Save" class="btn btn-primary btn-save"  />                    
+                    <a asp-action="Index" class="btn btn-dark btn-back">Back to List</a>
+                </div>                
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

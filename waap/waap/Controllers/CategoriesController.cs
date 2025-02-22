@@ -160,17 +160,22 @@ namespace wapp.Controllers
 
 
         [HttpGet]
-        // GET: Categories/ProductsByCategory/5
         public async Task<IActionResult> ProductsByCategory(int? id)
         {
             if (id == null)
-                return NotFound();
+                return RedirectToAction(nameof(Index));
 
-            var productListQuery = _context.Categories
-                .Include(p => p.Products)   
-                .Where(m => m.Id == id);
-                      
-            return View(await productListQuery.ToListAsync());
+            var category = await _context.Categories
+                .Include(p => p.Products)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (category == null)
+            { 
+                return RedirectToAction(nameof(Index));
+            }               
+
+            return View("/Views/Products/Index.cshtml", category.Products);
+            
         }
 
     }

@@ -137,7 +137,7 @@
     @{
         if ((isLogistics || isAdmin) && Model.State == SaleState.Processing)
         {
-            <a asp-action="Picking" class="btn btn-primary" asp-route-id="@Model?.Id">Picking</a>
+            <a asp-action="Picking" class="btn btn-primary btn-picking" asp-route-id="@Model?.Id">Picking</a>
         }
     }
 

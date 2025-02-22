@@ -3,10 +3,10 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>List of categories</h1>
 
 <p>
-    <a asp-action="Create">@sharedLocalizer["lblCreateNew"]</a>
+    <a asp-action="Create" class="btn btn-primary">@sharedLocalizer["lblCreateNew"]</a>
 </p>
 <table class="table">
     <thead>
@@ -30,9 +30,12 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <div class="d-inline-flex gap-2">
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Edit</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary btn-details">Details</a>
+                        <a asp-action="ProductsByCategory" asp-route-id="@item.Id" class="btn btn-primary ">Product in category</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                </div>
             </td>
         </tr>
 }

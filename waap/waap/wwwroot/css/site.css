@@ -20,3 +20,32 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.btn-picking {
+    background-color: olive;
+    
+}
+
+.btn-picking:hover{
+    background-color: green !important;
+}
+
+.btn-balance{
+    background-color:blueviolet
+}
+.btn-balance:hover {
+    background-color: forestgreen
+}
+
+.btn-details {}
+
+.btn-sales { background-color:chocolate}
+.btn-sales:hover {
+        background-color: forestgreen
+    }
+
+
+.btn-delete{}
+.btn-createnew {}
+.btn-back {}
+.btn-search { background-color:orangered}

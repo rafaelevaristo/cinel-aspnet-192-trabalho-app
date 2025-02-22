@@ -14,20 +14,38 @@
     using static wapp.waapConstants.POLICIES;
     using static wapp.waapConstants.USERS;
     using static wapp.waapConstants;
+    using Microsoft.AspNetCore.Mvc.Localization;
+    using NToastNotify;
+    using waap.Services;
+    using waap;
+    using Microsoft.AspNetCore.Identity.UI.Services;
 
     [Authorize]
     [Authorize(Policy = APP_POLICY_SALESAREAS.NAME)]
     public class SalesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<CategoriesController> _logger;
+        private readonly IToastNotification _toastNotification;
+        private readonly IHtmlLocalizer<Resource> _sharedLocalizer;
 
-        public SalesController(ApplicationDbContext context)
+       
+
+        public SalesController(ApplicationDbContext context,                               
+                                    ILogger<CategoriesController> logger,
+                                    IToastNotification toastNotification,
+                                   IHtmlLocalizer<Resource> localizer)
         {
-            _context = context;
+            
+
+            _context = context;            
+            _logger = logger;
+            _toastNotification = toastNotification;
+            _sharedLocalizer = localizer;
         }
 
         // GET: Sales
-        public async Task<IActionResult> Index(SaleState saleState, Boolean onlyNonPayed)
+        public async Task<IActionResult> Index(SaleState saleState, Boolean onlyNonPayed, int clientId)
         {
 
 
@@ -71,7 +89,28 @@
                 sales = sales.Where(s => s.IsPaid == false); 
             }
 
-            return View(await sales.ToListAsync());
+            if (clientId > 0)
+            {
+                sales = sales.Where(s => s.ClientId == clientId);
+            }
+
+            var salesViewData = await sales.ToListAsync();
+
+            if (salesViewData.Count == 0)
+            {
+                this.AddMessage("NoRecordsToDisplay");
+            }
+
+
+            return View(salesViewData);
+        }
+
+        private void AddMessage(string msgID)
+        {
+
+            var msgFailled = _sharedLocalizer[msgID].Value;
+            _toastNotification.AddWarningToastMessage($" # {msgFailled} ");
+
         }
 
         // GET: Sales/Create
@@ -126,7 +165,7 @@
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (sale == null) return NotFound();
 
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "FullName", sale.ClientId);
+            
             return View(sale);
         }
 
@@ -137,11 +176,25 @@
         {
             if (id != sale.Id) return NotFound();
 
-            if (ModelState.IsValid)
-            {
+            var saleToUpdate = await _context.Sales
+                .Include(s => s.Client)
+                .Include(s => s.SaleProducts)
+                .ThenInclude(sp => sp.Product)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            saleToUpdate.Identifier = sale.Identifier;
+            saleToUpdate.Date = sale.Date;
+            saleToUpdate.Time = sale.Time;
+            saleToUpdate.Observations = sale.Observations;
+            saleToUpdate.FinalValue = sale.FinalValue;
+            saleToUpdate.State = sale.State;
+            saleToUpdate.IsPaid = sale.IsPaid;
+
+
+           
                 try
                 {
-                    _context.Update(sale);
+                    _context.Update(saleToUpdate);
                     await _context.SaveChangesAsync();
                     TempData["Success"] = "Sale updated successfully!";
                 }
@@ -150,10 +203,44 @@
                     if (!SaleExists(sale.Id)) return NotFound();
                     throw;
                 }
-                return RedirectToAction(nameof(Index));
+           
+           
+
+            return RedirectToAction(nameof(Details), new { id = id }); 
+        }
+
+
+        public async Task<IActionResult> DeleteSalesProduct(int? id, int salesProductId)
+        {
+            var saleProduct = await _context.SaleProducts.FindAsync(salesProductId);
+            if (saleProduct != null)
+            {
+                _context.SaleProducts.Remove(saleProduct);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Sale product deleted successfully!";
             }
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "FullName", sale.ClientId);
-            return View(sale);
+
+            var sale = await _context.Sales
+                .Include(s => s.Client)
+                .Include(s => s.SaleProducts)
+                .ThenInclude(sp => sp.Product)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            decimal totalSaleValue = 0;
+
+            foreach (SaleProduct updatedSaleLine in sale.SaleProducts)
+            {
+                totalSaleValue =+ updatedSaleLine.OrderPrice;
+            }
+
+
+            sale.FinalValue = totalSaleValue;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Edit), new {id = id});
+
+            
         }
 
         // GET: Sales/Delete/5

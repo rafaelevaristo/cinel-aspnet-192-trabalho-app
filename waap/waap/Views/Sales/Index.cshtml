@@ -29,7 +29,7 @@
                 @Html.DisplayNameFor(model => model.Time)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Client)
+                @Html.DisplayNameFor(model => model.Client.FullName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Observations)
@@ -59,7 +59,7 @@
                     @Html.DisplayFor(modelItem => sale.Time)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => sale.Client.Address)
+                    @Html.DisplayFor(modelItem => sale.Client.FullName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => sale.Observations)
@@ -74,24 +74,25 @@
                     @Html.DisplayFor(modelItem => sale.IsPaid)
                 </td>
                 <td>
-
+                    <div class="d-inline-flex gap-2">
                     @{
                         if ((isLogistics || isAdmin))
                         {
                             if (sale.State == SaleState.Ordered)                            
                             {
-                                <a asp-controller="Processar" asp-action="StartProcessing" class="btn btn-success" asp-route-id="@sale.Id">Start Processing</a>
+                                <a asp-controller="Processar" asp-action="StartProcessing" class="btn btn-success" asp-route-id="@sale.Id">Process</a>
                             }
 
 
                             if (sale.State == SaleState.Processing)
                             {
-                                <a asp-controller="Processar" asp-action="StartProcessing" class="btn btn-warning" asp-route-id="@sale.Id">Execute picking</a>
+                                <a asp-controller="Processar" asp-action="StartProcessing" class="btn btn-primary btn-picking" asp-route-id="@sale.Id">Picking</a>
                             }
                             
                         }                        
                     }
 
+                        <a asp-controller="Sales" asp-action="Edit" asp-route-id="@sale.Id" class="btn btn-primary btn-edit">Edit</a>
                             <a asp-action="Details" class="btn btn-primary" asp-route-id="@sale.Id">Details</a>
                     
 
@@ -101,7 +102,7 @@
                             <a asp-action="Delete" class="btn btn-danger" asp-route-id="@sale.Id">Delete</a>
                         }
                     }
-                    
+                    </div>
                     
             </td>
         </tr>
