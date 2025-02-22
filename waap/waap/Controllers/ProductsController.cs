@@ -3,9 +3,14 @@ using wapp.Models;
 using waap.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
+using static wapp.waapConstants.POLICIES;
 
 namespace wapp.Controllers
 {
+
+    [Authorize]
+    [Authorize(Policy = APP_POLICY_PRODUCTSAREA.NAME)]
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;

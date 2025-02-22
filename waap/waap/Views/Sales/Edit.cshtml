@@ -6,8 +6,11 @@
 <h2>Edit Sale</h2>
 
 <form asp-action="Edit" method="post">
-    @* Anti-forgery token *@
-    @Html.AntiForgeryToken()
+    
+
+    <div class="mb-3">
+        <h1>@Html.DisplayFor(model => model.Client.FullName)</h1>
+    </div>
 
     <div class="mb-3">
         <label asp-for="Identifier"></label>
@@ -28,11 +31,7 @@
         </div>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="ClientId"></label>
-        <input asp-for="ClientId" class="form-control" />
-        <span asp-validation-for="ClientId" class="text-danger"></span>
-    </div>
+    
 
     <div class="mb-3">
         <label asp-for="Observations"></label>
@@ -65,94 +64,73 @@
 
     @* Hidden field for the Sale ID *@
     <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="@Model.ClientId" />
 
     <hr />
 
     <h4>Sale Products</h4>
 
+
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Product Id</th>
-                <th>Quantity</th>
-                <th>Order Price</th>
-                <th>Remove?</th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SaleProducts.FirstOrDefault().Product)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SaleProducts.FirstOrDefault().Product.FinalPrice)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SaleProducts.FirstOrDefault().Quantity)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SaleProducts.FirstOrDefault().OrderPrice)
+                </th>
+
+                <th></th>
             </tr>
         </thead>
         <tbody>
-            @for (int i = 0; i < Model.SaleProducts.Count; i++)
+            @foreach (var item in Model.SaleProducts)
             {
                 <tr>
-                    <!-- Hidden field for the SaleProduct Id -->
                     <td>
-                        <input type="hidden"
-                               asp-for="@Model.SaleProducts[i].Id" />
-                        <input type="hidden"
-                               asp-for="@Model.SaleProducts[i].SaleId" />
+                        @Html.DisplayFor(modelItem => item.Product.Description)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Product.FinalPrice)
+                    </td>
 
-                        <!-- Here you can do a dropdown or just a text input for ProductId -->
-                        <input asp-for="@Model.SaleProducts[i].ProductId" class="form-control" />
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Quantity)
                     </td>
                     <td>
-                        <input asp-for="@Model.SaleProducts[i].Quantity" class="form-control" />
+                        @Html.DisplayFor(modelItem => item.OrderPrice)
                     </td>
                     <td>
-                        <input asp-for="@Model.SaleProducts[i].OrderPrice" class="form-control" />
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger"
-                                onclick="removeRow(this)">
-                            X
-                        </button>
+                        <a asp-action="DeleteSalesProduct" asp-route-id="@Model.Id" asp-route-salesProductId="@item.Id" class="btn btn-danger btn-delete">Delete</a>
+
+
                     </td>
                 </tr>
             }
+            <tr>
+                <td colspan="4"></td>
+
+
+                @{
+
+                    var total = Model.SaleProducts?.Sum(sp => sp.OrderPrice) ?? 0m;
+                }
+
+                <td>  Preco total: @total.ToString("C")</td>
+
+            </tr>
         </tbody>
     </table>
 
-    <!-- Optionally, button to add a new row with JavaScript (Id=0 => new) -->
-    <button type="button" class="btn btn-secondary" onclick="addNewRow()">Add New Line</button>
 
     <br /><br />
 
     <button type="submit" class="btn btn-primary">Save</button>
 </form>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-
-    <script>
-        function removeRow(button) {
-            // Remove the row from the DOM
-            var row = button.closest('tr');
-            row.parentNode.removeChild(row);
-            // Setting the hidden ID to 0 can also help indicate "removed" if needed
-        }
-
-        function addNewRow() {
-            // This is a minimal example of client-side row insertion.
-            // For a robust solution, you'd clone a hidden template or handle indexes more carefully.
-            let tableBody = document.querySelector("table tbody");
-            let newIndex = document.querySelectorAll("table tbody tr").length;
-
-            let newRow = document.createElement("tr");
-            newRow.innerHTML = `
-                <td>
-                    <input type="hidden" name="SaleProducts[${newIndex}].Id" value="0"/>
-                    <input type="hidden" name="SaleProducts[${newIndex}].SaleId" value="@Model.Id"/>
-                    <input class="form-control" type="text" name="SaleProducts[${newIndex}].ProductId" value=""/>
-                </td>
-                <td>
-                    <input class="form-control" type="number" name="SaleProducts[${newIndex}].Quantity" value="1"/>
-                </td>
-                <td>
-                    <input class="form-control" type="number" step="0.01" name="SaleProducts[${newIndex}].OrderPrice" value="0"/>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-danger" onclick="removeRow(this)">X</button>
-                </td>
-            `;
-            tableBody.appendChild(newRow);
-        }
-    </script>
-}

@@ -5,12 +5,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace wapp.Controllers
 {
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.EntityFrameworkCore;
     using System.Linq;
     using System.Threading.Tasks;
 
+    [Authorize]
     public class SaleProductsController : Controller
     {
         private readonly ApplicationDbContext _context;

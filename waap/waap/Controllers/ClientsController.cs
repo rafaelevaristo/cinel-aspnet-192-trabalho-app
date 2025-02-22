@@ -2,9 +2,11 @@
 using wapp.Models;
 using waap.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace wapp.Controllers
 {
+    [Authorize]
     public class ClientsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -15,9 +17,22 @@ namespace wapp.Controllers
         }
 
         // GET: Clients
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchName, string searchNIF)
         {
-            return View(await _context.Clients.ToListAsync());
+            
+            var query = _context.Clients.AsQueryable();
+                        
+            if (!string.IsNullOrEmpty(searchName))
+            {
+                query = query.Where(c => c.FullName.Contains(searchName));
+            }
+                        
+            if (!string.IsNullOrEmpty(searchNIF))
+            {
+                query = query.Where(c => c.NIF.Contains(searchNIF));
+            }
+                        
+            return View(await query.ToListAsync());
         }
 
         // GET: Clients/Details/5

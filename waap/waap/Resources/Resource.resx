@@ -145,4 +145,7 @@
     <value>Category updated successfully!</value>
     <comment>Category updated successfully</comment>
   </data>
+  <data name="NoRecordsToDisplay" xml:space="preserve">
+    <value>No records to display</value>
+  </data>
 </root>

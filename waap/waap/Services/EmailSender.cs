@@ -1,35 +1,47 @@
 ﻿using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.Net;
 using System.Net.Mail;
+using waap.ServiceModels;
 
 namespace wapp.Services
 {
     public class EmailSender : IEmailSender
     {
+        private readonly EmailSettings _emailSettings;
+
+        public EmailSender(IOptions<EmailSettings> emailSettings)
+        {
+            _emailSettings = emailSettings.Value;
+        }
+
         public Task SendEmailAsync(string email, string subject, string htmlMessage)
         {
-            SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
+            using (SmtpClient smtpClient = new SmtpClient(_emailSettings.SmtpServer))
             {
-                Credentials = new NetworkCredential("olddonkeylearninglanguages@gmail.com", "gypl krrz pycm wrih"),
-                Port = 587,
-                EnableSsl = true,
-            };
+                smtpClient.Credentials = new NetworkCredential(_emailSettings.Email, _emailSettings.Password);
+                smtpClient.Port = _emailSettings.Port;
+                smtpClient.EnableSsl = _emailSettings.EnableSsl;
 
+                MailMessage mailMessage = new MailMessage()
+                {
+                    From = new MailAddress(_emailSettings.Email, _emailSettings.FriendlyName),
+                    Subject = subject,
+                    Body = htmlMessage,
+                    IsBodyHtml = true,
+                };
 
-            MailMessage mailMessage = new MailMessage()
-            {
-                From = new MailAddress("olddonkeylearninglanguages@gmail.com", "Aviso de sistema do trabalho de MVC"),
-                Subject = subject,
-                Body = htmlMessage,
-                IsBodyHtml = true,
-            };
+                mailMessage.To.Add(email);
+                mailMessage.Bcc.Add(_emailSettings.Email);
 
-            mailMessage.To.Add(email);
+                if (_emailSettings.SendNotificationEmail)
+                {
+                    smtpClient.Send(mailMessage);
+                }
 
-            mailMessage.Bcc.Add("olddonkeylearninglanguages@gmail.com");
-
-            smtpClient.Send(mailMessage);
+                
+            }
 
             return Task.CompletedTask;
         }

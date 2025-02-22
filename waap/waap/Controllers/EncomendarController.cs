@@ -8,19 +8,43 @@ using Microsoft.EntityFrameworkCore;
 using waap.Data;
 using wapp.Models;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Authorization;
+using waap.Services;
+using wapp.Services;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Localization;
+using NToastNotify;
+using wapp.Controllers;
 
 namespace waap.Controllers
 {
+
+    [Authorize]
     public class EncomendarController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly IEmailSender _emailSender;
+        private readonly IEmailSender _emailservice;
 
+        private readonly ViewRenderService _viewRenderService;
 
-        public EncomendarController(ApplicationDbContext context, IEmailSender emailSender)
+        private readonly ILogger<CategoriesController> _logger;
+        private readonly IToastNotification _toastNotification;        
+        private readonly IHtmlLocalizer<Resource> _sharedLocalizer;
+
+        public EncomendarController(ApplicationDbContext context, 
+                                    IEmailSender emailservice, 
+                                    ViewRenderService viewRenderService, 
+                                    ILogger<CategoriesController> logger,
+                                    IToastNotification toastNotification,
+                                   IHtmlLocalizer<Resource> localizer)
         {
             _context = context;
-            _emailSender = emailSender;
+            _emailservice = emailservice;
+            _viewRenderService = viewRenderService;
+
+            _logger = logger;
+            _toastNotification = toastNotification;
+            _sharedLocalizer = localizer;
         }
 
         // GET: SalesManagement
@@ -141,7 +165,7 @@ namespace waap.Controllers
 
                 try
                 {
-                    
+
                     var newSaleProduct = new SaleProduct
                     {
                         Quantity = saleproduct.Quantity,
@@ -150,7 +174,11 @@ namespace waap.Controllers
 
                         // TODO : Não gosto de fazer isto isto deveria ser revalidado mas sinceramente depois vê-se
                         //OrderPrice = saleproduct.Quantity * saleproduct.Product.FinalPrice
+
+
+
                     };
+
 
                     newSaleProducts.Add(newSaleProduct);
                 }
@@ -159,7 +187,7 @@ namespace waap.Controllers
                     // TODO return to the main view and pop a error message via toastr .
                     return BadRequest($"Bad quantity select for sale for product {saleproduct.Product.Description}");
                 }
-                
+
 
 
             }
@@ -175,10 +203,34 @@ namespace waap.Controllers
             newSale.FinalValue = totalSale;
             newSale.Observations = sale.Observations;
             newSale.Identifier = sale.Identifier;
-            //Guid.NewGuid().ToString();
+            newSale.State = SaleState.Ordered;
 
             _context.Sales.Add(newSale);
             await _context.SaveChangesAsync();
+
+            var saleData = await _context.Sales
+           .Include(s => s.Client)
+           .Include(s => s.SaleProducts)
+           .ThenInclude(sp => sp.Product)
+           .FirstOrDefaultAsync(m => m.Id == newSale.Id);
+
+            if (sale != null) {
+                try
+                {
+                    string htmlEmail = await _viewRenderService.RenderViewToStringAsync(ControllerContext, "_EmailTemplate", saleData);
+                    await _emailservice.SendEmailAsync(saleData.Client.Email, $"Encomenda {newSale.Identifier}", htmlEmail);
+                }
+                catch (Exception)
+                {
+                    var msgFalledToSendEmail = _sharedLocalizer["msgFalledToSendEmail"].Value;
+
+                    _toastNotification.AddErrorToastMessage($" # {msgFalledToSendEmail} : {saleData.Identifier}");
+
+                }
+
+           
+
+            }
             // Redirect or do something with newSaleId
             return RedirectToAction("Details", "Sales", new { id = newSale.Id });            
         }

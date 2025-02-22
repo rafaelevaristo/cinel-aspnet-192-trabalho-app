@@ -4,11 +4,37 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>List of clients</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <div class="d-inline-flex gap-2">
+
+        <a asp-action="Create" class="btn btn-primary btn-createnew">Create New</a>
+        <a class="btn btn-secondary btn-search" onclick="toggleSearch();" id="btnShowSearch">Show Search</a>
+
+    </div>
+
+   
 </p>
+
+<div class="feature-icon d-inline-flex align-items-center justify-content-center fs-5 mb-3" >
+
+    <form asp-action="Index" method="get" id="searchArea">
+        <div class="form-group">
+            <label for="searchName">Customer Name:</label>
+            <input type="text" name="searchName" class="form-control" />
+
+            <label for="searchVat">VAT Number:</label>
+            <input type="text" name="searchNIF" class="form-control" />
+
+            <input type="submit" value="Search" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary">Clear</a>
+        </div>
+    </form>
+</div>
+
+
+
 <table class="table">
     <thead>
         <tr>
@@ -67,11 +93,40 @@
                 @Html.DisplayFor(modelItem => item.ClientNumber)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <div class="d-inline-flex gap-2">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-edit">Edit</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary btn-details">Details</a> 
+                        <a asp-controller="sales" asp-action="index" asp-route-clientId="@item.Id" class="btn btn-primary btn-sales">Sales</a>                        
+                        <a asp-action="Saldo" asp-controller="Reporting" asp-route-IdCliente="@item.Id" class="btn btn-primary btn-balance">Balance</a>
+                        <a asp-controller="Encomendar" asp-action="selectproductsforsale" class="btn btn-primary" asp-route-id="@item.Id">Sell</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-delete">Delete</a>
+                </div>
+
             </td>
         </tr>
 }
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            var searchArea = document.getElementById('searchArea');
+            searchArea.style.display = 'none';
+        });
+
+        function toggleSearch() {
+            var searchArea = document.getElementById('searchArea');
+            var btnShowSearch = document.getElementById('btnShowSearch');
+
+            if (searchArea.style.display === 'none') {
+                searchArea.style.display = 'block';
+                btnShowSearch.textContent = "Hide Search";
+            } else {
+                searchArea.style.display = 'none';
+                btnShowSearch.textContent = "Show Search";
+            }
+        }
+    </script>
+}

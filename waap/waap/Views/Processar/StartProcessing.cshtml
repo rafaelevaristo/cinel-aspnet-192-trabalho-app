@@ -1,7 +1,14 @@
 ﻿@model wapp.Models.Sale
+@using wapp.Models
+@using static wapp.waapConstants
 
 @{
     ViewData["Title"] = "Details";
+
+    bool isAdmin = User.IsInRole(ROLES.ADMIN);
+    bool isSales = User.IsInRole(ROLES.SALESMAN);
+    bool isLogistics = User.IsInRole(ROLES.LOGISTICS);
+
 }
 
 <h1>Sale Processing</h1>
@@ -118,7 +125,31 @@
 </table>
 
 <div>
-    <a asp-action="ProcessAndVerify" class="btn btn-primary"  asp-route-id="@Model?.Id">Process</a> 
-    <a asp-action="Picking" class="btn btn-primary" asp-route-id="@Model?.Id">Picking</a>
+
+
+    @{
+        if ((isLogistics || isAdmin) && Model.State == SaleState.Ordered)
+        {
+            <a asp-action="ProcessAndVerify" class="btn btn-primary" asp-route-id="@Model?.Id">Process</a>
+        }
+    }
+
+    @{
+        if ((isLogistics || isAdmin) && Model.State == SaleState.Processing)
+        {
+            <a asp-action="Picking" class="btn btn-primary btn-picking" asp-route-id="@Model?.Id">Picking</a>
+        }
+    }
+
+    @{
+        if (isAdmin)
+        {
+    
+        }
+    }
+
+
+   
+    
     <a asp-action="Index" class="btn btn-danger">Cancel</a>
 </div>
